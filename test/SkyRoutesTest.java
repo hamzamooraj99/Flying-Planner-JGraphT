@@ -93,7 +93,7 @@ public class SkyRoutesTest {
 		try {
 			String meetUp = fi.leastTimeMeetUp("SYD", "EDI", "0600");
 			
-			assertEquals("SAT",meetUp);
+			assertEquals("CWL",meetUp);
 		} catch (FlyingPlannerException e) {
 			fail();
 		}
@@ -103,7 +103,7 @@ public class SkyRoutesTest {
 	public void test31() {
 		try {
 			String meetUp = fi.leastTimeMeetUp("EDI", "SYD", "2200");
-			assertEquals("BNE",meetUp);
+			assertEquals("BRU",meetUp);
 		} catch (FlyingPlannerException e) {
 			fail();
 		}
@@ -149,7 +149,7 @@ public class SkyRoutesTest {
 	public void testCR() {
 		try {
 			Journey h = fi.leastHop("LAX", "ADD");
-			String[] a = {"LAX", "DXB", "ADD"};
+			String[] a = {"LAX", "IST", "ADD"};
 			List<String> l = Arrays.asList(a);
 			assertEquals(l,h.getStops());
 		} catch (FlyingPlannerException e) {

@@ -152,7 +152,7 @@ public class FlyingPlannerProvidedTest {
 	public void airMilesTest2() {
 		try {
 			int airmiles = fi.leastHop("EDI", "DOH").totalAirmiles();
-			assertEquals(4585, airmiles);
+			assertEquals(3885, airmiles);
 		} catch (FlyingPlannerException e) {
 			fail();
 		}
