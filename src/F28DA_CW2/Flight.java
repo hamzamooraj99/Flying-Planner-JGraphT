@@ -31,7 +31,11 @@ public class Flight implements IFlight {
 	
 	
 	
-	
+	/**
+	 * This method is to format the time in the database to make it into a string with 4 digits
+	 * @param time
+	 * @return time - in correct format
+	 */
 // --------------------------------------------------- formatTimeString METHOD ---------------------------------------------------
 		public static String formatTimeString(String time) {
 			if(time.length() == 1) {
@@ -50,7 +54,14 @@ public class Flight implements IFlight {
 				return time;
 			}
 		}
-	
+
+		
+		
+		
+		
+	/**
+	 * Getter methods for the Flight Class
+	 */
 // --------------------------------------------------- METHODS ---------------------------------------------------	
 	@Override
 	public String getFlightCode() {

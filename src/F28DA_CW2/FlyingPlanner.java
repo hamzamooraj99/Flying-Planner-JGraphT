@@ -237,7 +237,6 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 	/**
 	 * The below directlyConnected methods are Overrides for the methods defined in IFlyingPlannerPartC.java
 	 */
-
 // --------------------------------------------------- directlyConnected METHODS ---------------------------------------------------
 	/**
 	 * This method returns the set of airports that are directly connected to the @param airport.
@@ -251,7 +250,10 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		Set<Airport> connectedAirports = new HashSet<>();
 		
 		for(Airport vertex : graph.vertexSet()) {
+			//Check for edge from the current vertex to the input airport
+	        //Check for edge from the input airport to the current vertex
 			if( graph.containsEdge(vertex, airport) && graph.containsEdge(airport, vertex) ) {
+				//Add the current vertex to the connected airports set
 				connectedAirports.add(vertex);
 			}
 		}
@@ -259,8 +261,11 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		return connectedAirports;
 	}
 	
+	
 	/**
-	 * 
+	 * This method returns the records of all airports' directly connected set and
+	 * its size. Returns the sum of all airports' directly connected set sizes.
+	 * @return sum of directly connected airports
 	 */
 	@Override
 	public int setDirectlyConnected() {
@@ -274,6 +279,11 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		return sum;
 	}
 	
+	
+	/**
+	 * This method populates a Directed Acyclic Graph with the directly connected airports
+	 * @returns the number of edges in the Directed Acyclic Graph
+	 */
 	@Override
 	public int setDirectlyConnectedOrder() {
 		for(Flight edge : graph.edgeSet()) {
@@ -289,7 +299,12 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		
 		return daGraph.edgeSet().size();
 	}
-		
+	
+	
+	/**
+	 * This methods returns the set of airports reachable from the given airport that have
+	 * strictly more direct connections.
+	 */
 	@Override	
 	public Set<Airport> getBetterConnectedInOrder(Airport airport) {
 		Set<Airport> betterConnected = new HashSet<>();
@@ -306,10 +321,20 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 
 
 
+	
+	
 	/**
-	 * 
+	 * The below methods find the ideal meet up airport between two starting points with specified filters
+	 * leastCost - Cheapest meet up point
+	 * leastHop - Cheapest of the meet up points with minimal connections
+	 * leastTime - Meet up time with shortest total journey time
 	 */
+// --------------------------------------------------- MeetUp METHODS ---------------------------------------------------
 // --------------------------------------------------- meetUp METHODS ---------------------------------------------------
+	/**
+	 * This method calculates the airport with the least cost to meet up at, given two starting airports.
+	 * It uses the leastCost() method to get the cheapest possible journey both ways.
+	 */
 	@Override
 	public String leastCostMeetUp(String at1, String at2) throws FlyingPlannerException {
 		List<String> codeList = codeList(at1, at2);
@@ -329,6 +354,12 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		return meetUp;
 	}
 
+	
+	/**
+	 * This method calculates the airport with the least number of hops to meet up at, given two starting airports.
+	 * It uses a class to hold information about the cost and hops of a journey. It also uses a comparator for that
+	 * class to sort a list according to hop number and cost.
+	 */
 	@Override
 	public String leastHopMeetUp(String at1, String at2) throws FlyingPlannerException {
 		List<String> codeList = codeList(at1, at2);
@@ -348,6 +379,11 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		return meetUp;
 	}
 
+	
+	/**
+	 * This method calculates the airport with the least amount of time to meet up at, given two starting airports from
+	 * a start time. It uses the total time to accommodate for connection times within journeys. 
+	 */
 	@Override
 	public String leastTimeMeetUp(String at1, String at2, String startTime) throws FlyingPlannerException {	
 		List<String> codeList = codeList(at1, at2);
@@ -402,6 +438,16 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 	}
 	
 	
+	//----------------------------- leastTimeMeetUp Helper Methods -----------------------------
+	/**
+	 * This method returns a list of airport codes that lie on a path between @from and @to 
+	 * It does so by calling the "allPaths" method with an increasing number of 
+	 * "hopNum" until the number of paths in the list is greater than or equal to 30 or
+	 * "hopNum" is greater than or equal to 6.
+	 * @param from
+	 * @param to
+	 * @return
+	 */
 	private List<String> codeList(String from, String to){
 		List<String> codeList = new LinkedList<>();
 		int maxNum = 0;
@@ -411,11 +457,20 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 			codeList = allPaths(from, to, hopNum);
 			maxNum = codeList.size();
 			hopNum++;
-		} while(maxNum<30 && hopNum<6);
+		} while(maxNum<50 && hopNum<6);
 		
 		return codeList;
 	}
 	
+	
+	/**
+	 * This method returns a list of all airports within journeys between @from and @to with an edge of
+	 * maximum @maxNum length
+	 * @param from
+	 * @param to
+	 * @param maxNum
+	 * @return
+	 */
 	private List<String> allPaths(String from, String to, int maxNum){
 		Airport fromA = airport(from);
 		Airport toA = airport(to);
@@ -439,6 +494,15 @@ public class FlyingPlanner implements IFlyingPlannerPartB<Airport,Flight>, IFlyi
 		return aCodeList;
 	}
 
+	
+	/**
+	 * This methods assigns the flight duration as the edge weight and finds the shortest Journey 
+	 * using Dijkstra's Algorithm between @from and @to
+	 * @param from
+	 * @param to
+	 * @return - Shortest Journey
+	 * @throws FlyingPlannerException
+	 */
 	public Journey leastTime(String from, String to) throws FlyingPlannerException {
 		Airport fromA = airport(from);
 		Airport toA = airport(to);
